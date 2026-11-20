@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inspección de cuadrillas eléctricas</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d2125">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#eceee9;--card:#fff;--ink:#1d2125;--mut:#5b6470;--line:#d2d7cf;--acc:#f5c400;--ok:#1f7a45;--no:#c62d2d;--na:#6b7280;--wn:#b87400;color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181b;--card:#1e2226;--ink:#eceff1;--mut:#9aa4ad;--line:#343b41;--ok:#4cc27f;--no:#ff6b6b;--na:#9aa4ad;--wn:#f0b429}}
+:root[data-theme="dark"]{--bg:#15181b;--card:#1e2226;--ink:#eceff1;--mut:#9aa4ad;--line:#343b41;--ok:#4cc27f;--no:#ff6b6b;--na:#9aa4ad;--wn:#f0b429}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;padding-bottom:76px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#1d2125;z-index:30}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:#1d2125;color:#fff;padding:10px 14px 12px;display:flex;align-items:center;gap:12px;justify-content:space-between;border-bottom:8px solid transparent;border-image:repeating-linear-gradient(-45deg,#f5c400 0 12px,#1d2125 12px 24px) 8}
+header h1{font:700 1.05rem/1.2 "Arial Narrow","Segoe UI",sans-serif;margin:0;letter-spacing:.01em}
+header small{display:block;color:#b9c0c7;font-weight:400}
+.pill{min-width:64px;text-align:center;padding:6px 10px;border-radius:6px;font-weight:700;background:#3a4047;color:#fff}
+.pill.g{background:#1f7a45}.pill.a{background:#b87400}.pill.r{background:#c62d2d}
+#stop{display:none;background:var(--no);color:#fff;padding:10px 14px;font-weight:700}
+#stop.on{display:block}#stop ul{margin:4px 0 0;padding-left:18px;font-weight:400}
+main{max-width:760px;margin:0 auto;padding:14px}
+h2{font:700 1.3rem/1.2 "Arial Narrow","Segoe UI",sans-serif;margin:6px 0 12px}
+h3{font-size:1rem;margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px}
+.f{display:block;margin-bottom:10px;font-size:.86rem;color:var(--mut)}
+.f input,.f select,.f textarea,.q{display:block;width:100%;margin-top:3px;padding:10px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}.row>*{flex:1 1 150px}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 14px;border-radius:6px;min-height:44px}
+.pri{background:var(--acc);border-color:var(--acc);color:#1d2125;font-weight:700}
+.dng{color:var(--no)}
+:focus-visible{outline:3px solid #2b7de9;outline-offset:2px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:#1d2125;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;border-radius:0;background:transparent;color:#b9c0c7;min-height:56px;font-size:.74rem}
+nav button.on{color:#1d2125;background:var(--acc);font-weight:700}
+.it{border-top:1px solid var(--line);padding:10px 0}
+.it:first-of-type{border-top:0}
+.it p{margin:0 0 8px}
+.crit{font-size:.72rem;background:var(--no);color:#fff;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.seg{display:flex;gap:6px;margin-bottom:8px}.seg button{flex:1;padding:8px 4px}
+.seg button.on[data-v="ok"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.seg button.on[data-v="no"]{background:var(--no);border-color:var(--no);color:#fff}
+.seg button.on[data-v="na"]{background:var(--na);border-color:var(--na);color:#fff}
+.it .ph{display:inline-block;margin:8px 8px 0 0;color:var(--ink);font:inherit;font-size:.9rem;cursor:pointer;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+.it img,.rep img{max-width:100%;max-height:200px;border-radius:6px;display:block;margin-top:6px}
+.bh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:2px 0 6px}.bar i{display:block;height:100%;background:var(--ok)}
+details.card>summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:8px}
+canvas{width:100%;height:160px;background:#fff;border:1px dashed var(--mut);border-radius:6px;touch-action:none;display:block}
+.mut{color:var(--mut);font-size:.88rem}
+.tg{color:var(--no);font-weight:700}
+#toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#1d2125;color:#fff;padding:10px 16px;border-radius:6px;z-index:40;display:none;max-width:90%}
+table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{border:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+.scroll{overflow-x:auto}
+#out{width:100%;height:90px;margin-top:8px;display:none;font:.8rem monospace}
+@page{size:A4;margin:0}
+@media print{body::before,header,nav,#stop,.noprint,#toast,#dlg{display:none!important}body{background:#fff;color:#000;padding:0 12mm;font-size:12px}:root{--card:#fff;--ink:#000;--line:#bbb;--mut:#444;padding:0}main{padding:0;max-width:none}.sp{height:12mm}table{font-size:11px}td,th{padding:3px 5px}p,li,h2,h3,small,.li,.chip,.cr,.bt,.gi,.kp,.br,.fb,.cap,.good,.alert li,.alert,.hero,.ck tr,.ck td,.ck th,figure,figcaption,.rp img,.gauge{break-inside:avoid;page-break-inside:avoid}.rp{orphans:3;widows:3}.blk,.bars,.grid,.mit,.cap2,.kpis{break-inside:auto}.rp *{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.n{color:var(--mut);margin-right:2px}.pick{display:flex;gap:10px;align-items:center;min-height:44px;border-top:1px solid var(--line)}.pick input{width:20px;height:20px}
+.rh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.rh img{max-height:64px;max-width:160px;margin:0}
+.ck td:nth-child(1){width:30px}.ck td:nth-child(3){width:46px;text-align:center}.sg{display:flex;gap:16px}.sg>div{flex:1}.sg img{max-height:80px}
+#dlg{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px}#dlg.on{display:flex}#dlg .box{background:var(--card);border:3px solid var(--acc);border-radius:8px;padding:16px;max-width:420px;width:100%}#dlg h3{color:var(--no);font-size:1.3rem;margin:0 0 8px}
+.rp{overflow-wrap:anywhere;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:100%;border-collapse:collapse;table-layout:fixed}.pg>thead>tr>td,.pg>tbody>tr>td,.pg>tfoot>tr>td{border:0;padding:0}.sp{height:0}
+.hero{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#1d2125;color:#fff;border-radius:10px;padding:14px 16px;border-bottom:8px solid transparent;border-image:repeating-linear-gradient(-45deg,#f5c400 0 12px,#1d2125 12px 24px) 8}
+.hero h2{margin:2px 0;font-size:1.5rem}.hero .ey{color:#f5c400;font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}.hero .sub,.hero .meta{color:#c9d0d6;font-size:.9rem}
+.hero img{max-height:64px;max-width:150px;background:#fff;padding:4px;border-radius:6px;margin:0}
+.kpis{display:flex;gap:10px;align-items:stretch;margin:12px 0}
+.gauge{width:104px;height:104px;border-radius:50%;flex:none;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;background:conic-gradient(var(--gc) calc(var(--p)*1%),#d9ddd6 0)}
+.gauge::before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--card)}
+.gauge b,.gauge small{position:relative;line-height:1.1}.gauge b{font-size:1.5rem}.gauge small{font-size:.65rem;color:var(--mut)}
+.kp{flex:1;border-radius:10px;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:8px}.kp b{font-size:1.8rem;line-height:1}.kp small{font-size:.8rem}
+.kp.ok{background:#1f7a45}.kp.no{background:#c62d2d}.kp.na{background:#6b7280}
+.alert,.good{border-radius:8px;padding:10px 12px;font-weight:700;margin-bottom:12px}.alert{background:#c62d2d;color:#fff}.alert ul{margin:4px 0 0;padding-left:18px;font-weight:400}.good{background:rgba(31,122,69,.15);color:var(--ok)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px}
+.gi{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:6px;padding:6px 10px}.gi small{display:block;color:var(--mut);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}.gi.w{grid-column:1/-1}
+.bars h3{margin:4px 0}.br{display:grid;grid-template-columns:minmax(110px,38%) 1fr 44px;gap:8px;align-items:center;margin:4px 0;font-size:.88rem}.br b{text-align:right}.pb{height:10px;background:var(--line);border-radius:5px;overflow:hidden}.pb i{display:block;height:100%}
+.blk{margin:14px 0}.bt{display:flex;align-items:center;gap:8px;background:#1d2125;color:#fff;border-radius:6px 6px 0 0;padding:6px 10px;break-after:avoid}.bt b{background:#f5c400;color:#1d2125;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;flex:none}.bt span{flex:1;font-weight:700}.bt em{font-style:normal;font-weight:700;color:#f5c400}
+.ck{border:1px solid var(--line)}.ck tr.rno td{background:rgba(198,45,45,.12)}
+.ac td:nth-child(1){width:auto}.ac td:nth-child(3){width:96px;text-align:left}
+.chip{display:inline-block;min-width:38px;text-align:center;color:#fff;border-radius:10px;padding:1px 8px;font-weight:700;font-size:.8rem}.chip.ok{background:#1f7a45}.chip.no{background:#c62d2d}.chip.na{background:#6b7280}
+.cr{color:#c62d2d;font-size:.7rem;font-weight:700;margin-left:6px}
+.ck img{max-height:90px;display:inline-block;margin:4px 4px 0 0}
+.fb{border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center}.fb img{background:#fff;border-radius:4px}.fb .blank{height:60px}.fb .cap{border-top:1px solid var(--line);margin-top:6px;padding-top:4px;font-size:.85rem}
+#cam{display:none;position:fixed;inset:0;z-index:60;background:#000;flex-direction:column}#cam.on{display:flex}#cam video{flex:1;min-height:0;width:100%;object-fit:contain}#cam .row{padding:12px;background:#1d2125;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+.chip{white-space:nowrap}.ck td:nth-child(3){width:58px}
+.cap2{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-bottom:8px}.cap2>.gi,.mit>.gi{min-width:0}.mit{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.grid{margin-bottom:8px}.mit .li{padding:1px 0}.mit .li+.li{border-top:1px dotted var(--line)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;border:1px solid var(--line);padding:8px}.gal figure{margin:0;break-inside:avoid}.gal img{width:100%;height:150px;max-height:none;object-fit:cover;border-radius:6px;display:block}.gal figcaption{font-size:.8rem;color:var(--mut)}
+</style>
+</head>
+<body>
+<header><h1>Inspección de cuadrilla<small id="sub">Obras eléctricas en vía pública</small></h1><div style="display:flex;gap:8px;align-items:center"><button data-a="reset" style="background:transparent;color:#fff;border-color:#6b7280;padding:6px 10px;min-height:40px">Nueva planilla</button><div class="pill" id="pill">–</div></div></header>
+<div id="stop"></div>
+<main id="app"></main>
+<nav id="nav"></nav>
+<div id="toast"></div>
+<div id="dlg"></div>
+<div id="cam"></div>
+<script>
+/* ===== CONFIGURACIÓN: editá bloques e ítems. [texto, 1 = crítico (No cumple = detener tarea)] ===== */
+const TIPOS=["Baja tensión (BT)","Media tensión (MT)","Acometidas domiciliarias","Alumbrado público","Tendido subterráneo","Tendido aéreo","Otro"];
+const CFG=[
+{n:"Seguridad eléctrica: cinco reglas de oro",i:[["Regla 1 – Corte efectivo: se desconectaron todas las fuentes de alimentación que pueden energizar la zona de trabajo",1],["Regla 2 – Bloqueo: dispositivos de maniobra bloqueados contra reconexión accidental y señalizados con la prohibición de operar",1],["Regla 3 – Prueba de ausencia de tensión: verificada con detector adecuado, probado antes de usarlo, en todos los conductores a intervenir",1],["Regla 4 – Puesta a tierra y en cortocircuito: instalada en los puntos previstos por el procedimiento",1],["Regla 5 – Delimitación de la zona de trabajo: área delimitada y señalizada para impedir el acceso de terceros",0],["Distancias de seguridad respetadas",0],["Herramientas aisladas y pértigas ensayadas y en buen estado",0]]},
+{n:"EPP",i:[["Casco dieléctrico en buen estado",0],["Guantes dieléctricos con ensayo vigente",0],["Guantes (vaqueta)",0],["Calzado de seguridad dieléctrico",0],["Protección facial o contra arco",0],["Ropa de trabajo adecuada al riesgo",0]]},
+{n:"Trabajos en altura",i:[["Cinturón tipo liniero en condiciones de uso",1],["Arnés de seguridad en condiciones de uso",1],["Cabo de amarre adecuado y en condiciones de uso",1],["Escaleras en buen estado, estables, bien apoyadas y dieléctricas cuando corresponda",0],["Poste verificado antes del ascenso: estado, estabilidad y retenidas",1]]},
+{n:"Señalización y área de trabajo",i:[["Zona de trabajo vallada y señalizada para peatones y vehículos (conos, vallas, desvío)",0]]},
+{n:"Herramientas",i:[["Pértiga",0],["Detector de MT",0],["Detector de BT",0],["Equipo PAT",0],["Otras herramientas",0]]},
+{n:"Vehículos",i:[["Frenos, luces, espejos, cinturones, cubiertas y carrocería en buen estado",0],["Botiquín completo",0],["Extintor vigente",0]]},
+{n:"Grúas e izaje",i:[["Grúa o hidrogrúa con certificado de verificación vigente y carga máxima identificada",1],["Dispositivos de seguridad de la grúa operativos",1],["Accesorios de izaje (ganchos, cadenas, perchas, eslingas, fajas) en buen estado",0],["Operador de grúa capacitado",0],["Maniobra de izaje señalizada y delimitada",0]]}
+];
+/* ===== utilidades ===== */
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const now=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)};
+const hoy=()=>now().slice(0,10).split("-").reverse().join("/"),fh=o=>[o.fecha,o.hora].filter(Boolean).join(" "),dm=p=>p?p.split("-").reverse().join("/"):"";
+const blank=()=>({v:2,id:Date.now().toString(36),obra:{fecha:hoy(),hora:now().slice(11),tipo:TIPOS[0]},cuad:{sel:[],veh:[]},it:{},acc:[],f:{}});
+/* migración: la planilla v1 tenía otros bloques/ítems; se reubican las respuestas guardadas */
+const MIG={"0":a=>"0-"+a,"2":a=>"1-"+[0,1,3,4,5][a],"3":a=>"2-"+a,"4":a=>a===0?"3-0":null,"6":a=>"5-"+a,"7":a=>"6-"+a};
+function migrar(x){if(!x||typeof x!=="object"||x.v>=2)return x;const n={};Object.keys(x.it||{}).forEach(k=>{const p=k.split("-"),f=MIG[p[0]];const nk=f?f(+p[1]):null;if(nk)n[nk]=x.it[k]});x.it=n;x.v=2;return x}
+function load(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+let S=migrar(load("ci_draft"))||blank(),H=(load("ci_hist")||[]).map(migrar),tab="obra",q="",NOM=load("ci_nom")||[];
+const setNom=a=>{NOM=[...new Set(a.map(x=>x.replace(/^["']|["']$/g,"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));store("ci_nom",NOM)};
+const vl=v=>v.t+(v.t==="Camión"?" "+(v.g||"s/grúa"):"")+" – Unidad "+(v.u||"s/n")+" – Dominio "+(v.d||"s/d");
+function autoFH(){if(!S.obra.fm&&!Object.keys(S.it).length){S.obra.fecha=hoy();S.obra.hora=now().slice(11);persist()}}
+const persist=()=>{if(!store("ci_draft",S))toast("Memoria llena: guardá un respaldo JSON y borrá inspecciones viejas")};
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(tt);tt=setTimeout(()=>t.style.display="none",3200)}
+const get=p=>p.split(".").reduce((o,k)=>o==null?o:o[k],S);
+const set=(p,v)=>{const a=p.split(".");let o=S;a.slice(0,-1).forEach(k=>{if(o[k]==null)o[k]={};o=o[k]});o[a[a.length-1]]=v};
+const fld=(l,p,t="text",x="")=>`<label class="f">${l}<input type="${t}" data-p="${p}" value="${esc(get(p))}" ${x}></label>`;
+const clsP=p=>p==null?"":p>=90?"g":p>=70?"a":"r";
+/* ===== puntaje y criticidad ===== */
+function sc(s){
+ const B=CFG.map((b,bi)=>{let ok=0,no=0;b.i.forEach((x,i)=>{const e=(s.it[bi+"-"+i]||{}).e;if(e==="ok")ok++;if(e==="no")no++});return{n:b.n,ok,no,tot:b.i.length,p:ok+no?Math.round(100*ok/(ok+no)):null}});
+ let ok=0,no=0,stop=[],fails=[];
+ B.forEach(b=>{ok+=b.ok;no+=b.no});
+ CFG.forEach((b,bi)=>b.i.forEach((x,i)=>{if((s.it[bi+"-"+i]||{}).e==="no"){fails.push(b.n+": "+x[0]);if(x[1])stop.push(x[0])}}));
+ return{B,ok,no,stop,fails,p:ok+no?Math.round(100*ok/(ok+no)):null}
+}
+function head(){
+ const r=sc(S);const p=$("#pill");p.textContent=r.p==null?"–":r.p+"%";p.className="pill "+clsP(r.p);
+ const st=$("#stop");st.className=r.stop.length?"on":"";
+ st.innerHTML=r.stop.length?`Detener tarea: incumplimiento crítico<ul>${r.stop.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:"";
+}
+let camS=null,camK=null;
+async function camOpen(k){
+ try{camS=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280}},audio:false})}
+ catch(e){toast("No se pudo abrir la cámara. Revisá el permiso del navegador. Podés elegir una foto de la galería.");const g=document.querySelector(k==="gal"?"#gal input[data-ph]":`.it[data-k="${k}"] input[data-ph]`);if(g)g.click();return}
+ camK=k;const c=$("#cam");c.className="on";c.innerHTML='<video id="cv" autoplay playsinline muted></video><div class="row"><button data-c="x">Cancelar</button><button class="pri" data-c="s">Capturar</button></div>';$("#cv").srcObject=camS}
+function camClose(){if(camS)camS.getTracks().forEach(t=>t.stop());camS=null;const c=$("#cam");c.className="";c.innerHTML=""}
+function setFoto(k,u){if(k==="gal"){(S.gal=S.gal||[]).push({f:u,c:""});persist();toast("Foto agregada");const g=$("#gal");if(g)g.innerHTML=galHTML();return}
+ (S.it[k]=S.it[k]||{}).f=u;persist();toast("Foto agregada");const el=document.querySelector(`.it[data-k="${k}"]`),p=k.split("-");if(el)el.outerHTML=itemHTML(+p[0],+p[1])}
+function camShot(){const v=$("#cv");if(!v||!v.videoWidth){toast("La cámara todavía no está lista");return}const m=800,r=Math.min(1,m/Math.max(v.videoWidth,v.videoHeight)),c=document.createElement("canvas");c.width=v.videoWidth*r;c.height=v.videoHeight*r;c.getContext("2d").drawImage(v,0,0,c.width,c.height);setFoto(camK,c.toDataURL("image/jpeg",.6));camClose()}
+function galHTML(){const g=S.gal||[];return `<div class="row"><button data-a="cam" data-k="gal">Tomar foto</button><label class="btn" style="text-align:center">Elegir de la galería<input type="file" accept="image/*" multiple hidden data-ph="gal"></label></div>`+g.map((x,i)=>`<div class="it"><img src="${x.f}" alt="Foto adicional ${i+1}"><input class="q" data-g="${i}" placeholder="Descripción (opcional)" value="${esc(x.c)}"><button class="dng" data-a="delgal" data-i="${i}" style="margin-top:8px">Quitar foto</button></div>`).join("")}
+function ask(m,ok,lbl){const d=$("#dlg");d.innerHTML=`<div class="box" role="alertdialog" aria-modal="true"><h3>Advertencia !!!</h3><p>${esc(m)}</p><div class="row"><button data-d="0">Cancelar</button><button class="pri" data-d="1">${lbl||"Aceptar"}</button></div></div>`;d.className="on";d.onclick=e=>{const b=e.target.closest("button");if(!b)return;d.className="";if(b.dataset.d==="1")ok()}}
+/* ===== vistas ===== */
+const TABS=[["obra","Obra"],["cuad","Cuadrilla"],["veh","Vehículos"],["chk","Checklist"],["cierre","Cierre"],["hist","Historial"],];
+function nav(){$("#nav").innerHTML=TABS.map(t=>`<button data-tab="${t[0]}" class="${tab===t[0]?"on":""}">${t[1]}</button>`).join("")}
+function itemHTML(bi,i){
+ const x=CFG[bi].i[i],k=bi+"-"+i,d=S.it[k]||{},more=d.e==="no"||d.o||d.f||d.x,nu=CFG.slice(0,bi).reduce((a,b)=>a+b.i.length,0)+i+1;
+ return `<div class="it" data-k="${k}"><p><span class="n">${nu}.</span> ${/^Regla [^:]+:/.test(x[0])?x[0].replace(/^(Regla [^:]+:)(.*)$/,(m,a,b)=>"<b>"+esc(a)+"</b>"+esc(b)):esc(x[0])}${x[1]?'<span class="crit">crítico</span>':""}</p>
+ <div class="seg">${[["ok","SI"],["no","NO"],["na","N/A"]].map(v=>`<button data-v="${v[0]}" class="${d.e===v[0]?"on":""}">${v[1]}</button>`).join("")}</div>
+ ${more?`<input class="q" data-o="${k}" placeholder="Observación" value="${esc(d.o)}"><button class="ph" data-a="cam" data-k="${k}">Tomar foto</button><label class="ph">Elegir de la galería<input type="file" accept="image/*" hidden data-ph="${k}"></label>${d.f?`<img src="${d.f}" alt="Foto del ítem"><button class="dng" data-a="delfoto" data-k="${k}" style="margin-top:8px">Quitar foto</button>`:""}`:`<button class="ph" data-a="more" data-k="${k}">+ Foto u observación</button>`}</div>`;
+}
+const V={
+ obra:()=>`<h2>Datos de obra</h2><div class="card">
+ ${fld("Comitente","obra.comitente")}${fld("Contratista / Sector / Cuadrilla","obra.contratista")}${fld("Ubicación / dirección","obra.ubic")}
+ <div class="row"><label class="f">Coordenadas GPS<input data-p="obra.gps" value="${esc(get("obra.gps"))}" placeholder="sin datos"></label><button data-a="gps">Usar mi ubicación</button></div>
+ <div class="row">${fld("Fecha (dd/mm/aaaa)","obra.fecha","text",'inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa"')}${fld("Hora","obra.hora","time")}</div><button data-a="ahora">Usar fecha y hora actuales del teléfono</button><br><br>
+ <label class="f">Tipo de trabajo<select data-p="obra.tipo">${TIPOS.map(t=>`<option${get("obra.tipo")===t?" selected":""}>${t}</option>`).join("")}</select></label>
+ ${fld("ART / n.º de cobertura","obra.art")}${fld("Inspector (quien realiza la visita)","obra.insp")}<label class="f">Logo del contratista${S.obra.logo?`<img src="${S.obra.logo}" alt="Logo del contratista" style="max-height:70px;display:block;margin:6px 0">`:""}<input type="file" accept="image/*" data-logo></label>${S.obra.logo?'<button data-a="dellogo">Quitar logo</button>':""}</div>`,
+ cuad:()=>`<h2>Cuadrilla</h2><div class="card"><h3>Listado de personal</h3><label class="f">Un nombre por línea (podés pegar una columna copiada de Excel)<textarea id="nom" rows="4">${esc(NOM.join("\n"))}</textarea></label>
+ <div class="row"><button data-a="savenom">Guardar listado</button><label class="btn" style="text-align:center">Importar archivo (.txt o .csv)<input type="file" accept=".txt,.csv,text/plain,text/csv" hidden data-nom></label><button class="dng" data-a="delnom">Borrar listado</button></div></div>
+ <div class="card"><datalist id="dl">${NOM.map(n=>`<option value="${esc(n)}">`).join("")}</datalist><label class="f">Capataz / responsable de cuadrilla<input data-p="cuad.resp" list="dl" value="${esc(get("cuad.resp"))}"></label>
+ <label class="f">Tareas asignadas<textarea rows="2" data-p="cuad.tareas">${esc(get("cuad.tareas"))}</textarea></label></div>
+ <div class="card"><h3>Integrantes presentes</h3>${NOM.length?NOM.map(n=>`<label class="pick"><input type="checkbox" data-sel="${esc(n)}" ${(S.cuad.sel||[]).includes(n)?"checked":""}> ${esc(n)}</label>`).join(""):'<p class="mut">Cargá el listado de personal para elegir a los integrantes.</p>'}</div>`,
+ veh:()=>`<h2>Vehículos</h2>${(S.cuad.veh||[]).map((v,i)=>`<div class="card"><div class="bh"><h3>Vehículo ${i+1}</h3><button class="dng" data-a="delveh" data-i="${i}">Quitar</button></div>
+ <label class="f">Tipo<select data-p="cuad.veh.${i}.t"><option${v.t==="Camión"?"":" selected"}>Camioneta</option><option${v.t==="Camión"?" selected":""}>Camión</option></select></label>
+ ${v.t==="Camión"?`<label class="f">Categoría<select data-p="cuad.veh.${i}.g">${["s/grúa","c/grúa","c/hidroelevador"].map(o=>`<option${(v.g||"s/grúa")===o?" selected":""}>${o}</option>`).join("")}</select></label>`:""}
+ <div class="row">${fld("Número de unidad","cuad.veh."+i+".u")}${fld("Dominio","cuad.veh."+i+".d","text",'maxlength="9" autocapitalize="characters"')}</div></div>`).join("")||'<p class="mut">Todavía no cargaste vehículos.</p>'}
+ <button class="pri" data-a="addveh">Agregar vehículo</button>`,
+ chk:()=>{const r=sc(S);return `<h2>Checklist</h2>`+CFG.map((b,bi)=>`<section class="card"><div class="bh"><h3>${b.n}</h3><span class="mut">${b.i.filter((x,i)=>(S.it[bi+"-"+i]||{}).e).length}/${b.i.length}</span></div>${b.i.map((x,i)=>itemHTML(bi,i)).join("")}</section>`).join("")},
+ cierre:()=>{const r=sc(S);return `<h2>Cierre</h2>
+ <div class="card"><h3>Resultado</h3><p>Cumplimiento global: <b>${r.p==null?"sin datos":r.p+"%"}</b>. Respuestas NO: <b>${r.no}</b>.</p>
+ ${r.stop.length?`<p class="tg">Hay ${r.stop.length} incumplimiento(s) crítico(s): detener la tarea.</p>`:""}
+ <div class="scroll"><table>${r.B.map(b=>`<tr><td>${b.n}</td><td>${b.p==null?"–":b.p+"%"}</td></tr>`).join("")}</table></div></div>
+ <h3>Acciones correctivas</h3>${S.acc.map((a,i)=>`<div class="card">${fld("Acción","acc."+i+".t")}<div class="row">${fld("Responsable","acc."+i+".r")}${fld("Plazo (dd/mm/aaaa)","acc."+i+".p","text",'inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa"')}<button class="dng" data-a="delacc" data-i="${i}">Quitar</button></div></div>`).join("")}
+ <div class="row"><button data-a="addacc">Agregar acción</button><button data-a="autoacc">Cargar los ítems con NO</button></div><br>
+ <div class="card"><h3>Fotos adicionales</h3><p class="mut">Fotos generales de la obra, aunque no haya incumplimientos.</p><div id="gal">${galHTML()}</div></div>
+ <div class="card"><h3>Firmas</h3>${fld("Inspector (nombre)","obra.insp")}<canvas id="c-insp"></canvas><button data-a="clr" data-n="insp">Borrar firma</button>
+ <br><br>${fld("Responsable de cuadrilla (nombre)","cuad.resp")}<canvas id="c-resp"></canvas><button data-a="clr" data-n="resp">Borrar firma</button></div>
+ <div class="row"><button class="pri" data-a="save">Guardar inspección</button><button data-a="rep">Ver informe</button><button data-a="wa">Enviar resumen por WhatsApp</button></div>
+ <p class="mut">Guardar la inspección la pasa al historial y abre una nueva en blanco.</p>`},
+ rep:()=>`<div class="noprint row"><button data-tab="cierre">Volver</button><button class="pri" data-a="dlrep">Descargar informe</button><button data-a="print">Imprimir</button></div><label class="pick noprint"><input type="checkbox" data-p="barras" ${S.barras!==false?"checked":""}> Incluir “Cumplimiento por bloque” en el informe</label><p class="noprint mut">En el celular: tocá “Descargar informe”, abrilo con Chrome y tocá “Imprimir / guardar PDF” para obtener el PDF.</p><div class="rep">${reporte(S)}</div>`,
+ hist:()=>`<h2>Historial</h2><div class="card"><label class="f">Buscar por obra, contratista o capataz<input id="q" value="${esc(q)}"></label>
+ <div class="row"><button data-a="copyj">Copiar respaldo</button><button data-a="dlj">Descargar respaldo</button><label class="btn" style="text-align:center">Importar respaldo<input type="file" accept=".json,application/json" hidden data-imp></label></div><textarea id="out" readonly></textarea></div><div id="hl">${histList()}</div>`
+};
+function norm(s){return String(s||"").trim().toLowerCase()}
+function histList(){
+ const f=norm(q);const L=H.map((e,i)=>({e,i})).filter(({e})=>!f||[e.obra.comitente,e.obra.contratista,e.obra.ubic,e.cuad.resp].some(v=>norm(v).includes(f)));
+ if(!L.length)return `<p class="mut">${H.length?"Ninguna inspección coincide con la búsqueda.":"Todavía no hay inspecciones guardadas. Completá una y tocá “Guardar inspección” en Cierre."}</p>`;
+ return L.map(({e,i})=>{const r=sc(e);let rc=0;
+  if(norm(e.obra.contratista)){const old=H.slice(i+1).filter(x=>norm(x.obra.contratista)===norm(e.obra.contratista));
+   CFG.forEach((b,bi)=>b.i.forEach((x,ii)=>{const k=bi+"-"+ii;if((e.it[k]||{}).e==="no"&&old.some(o=>(o.it[k]||{}).e==="no"))rc++}))}
+  return `<div class="card"><div class="bh"><b>${esc(e.obra.contratista||"Sin contratista")} — ${esc(e.obra.ubic||"sin ubicación")}</b><span class="pill ${clsP(r.p)}">${r.p==null?"–":r.p+"%"}</span></div>
+  <div class="mut">${esc(fh(e.obra))} · capataz: ${esc(e.cuad.resp||"–")}</div>
+  ${r.stop.length?`<div class="tg">Detener tarea: ${r.stop.length} crítico(s)</div>`:""}${rc?`<div class="tg">${rc} reincidencia(s) respecto de inspecciones anteriores</div>`:""}
+  <div class="row" style="margin-top:8px"><button data-a="openh" data-i="${i}">Abrir</button><button class="dng" data-a="delh" data-i="${i}">Borrar</button></div></div>`}).join("")
+}
+function reporte(s){
+ const r=sc(s),o=s.obra,c=s.cuad,col=p=>p==null?"#6b7280":p>=90?"#1f7a45":p>=70?"#b87400":"#c62d2d";
+ let n=0,na=0;
+ const blq=CFG.map((b,bi)=>{
+  const rows=b.i.map((x,i)=>{n++;const d=s.it[bi+"-"+i]||{};if(!d.e&&!d.f&&!d.o)return"";if(d.e==="na")na++;
+   return `<tr class="${d.e==="no"?"rno":""}"><td>${n}</td><td>${esc(x[0])}${x[1]?'<span class="cr">CRÍTICO</span>':""}</td><td>${d.e?`<span class="chip ${d.e}">${{ok:"SI",no:"NO",na:"N/A"}[d.e]}</span>`:"–"}</td><td>${esc(d.o)}${d.f?`<img src="${d.f}" alt="">`:""}</td></tr>`}).join("");
+  const B=r.B[bi];
+  return rows?`<div class="blk"><div class="bt"><b>${bi+1}</b><span>${b.n}</span><em>${B.p==null?"":B.p+"%"}</em></div><table class="ck">${rows}</table></div>`:""}).join("");
+ const gi=(l,v,w)=>v?`<div class="gi${w?" w":""}"><small>${l}</small>${esc(v)}</div>`:"";
+ const vehL=(c.veh||[]).filter(v=>v.u||v.d).map(vl),lst=(l,a)=>`<div class="gi"><small>${l}${a.length?" ("+a.length+")":""}</small>${a.length?a.map(x=>`<div class="li">${esc(x)}</div>`).join(""):"–"}</div>`;
+ const bars=s.barras===false?"":r.B.filter(b=>b.p!=null).map(b=>`<div class="br"><span>${b.n}</span><div class="pb"><i style="width:${b.p}%;background:${col(b.p)}"></i></div><b>${b.p}%</b></div>`).join("");
+ const acc=(s.acc||[]).length?`<div class="blk"><div class="bt"><b>!</b><span>Acciones correctivas</span></div><table class="ck ac"><tr><th>Acción</th><th>Responsable</th><th>Plazo</th></tr>${s.acc.map(a=>`<tr><td>${esc(a.t)}</td><td>${esc(a.r)}</td><td>${dm(a.p)}</td></tr>`).join("")}</table></div>`:"";
+ const gal=(s.gal||[]).length?`<div class="blk"><div class="bt"><b>+</b><span>Fotos adicionales</span></div><div class="gal">${s.gal.map(x=>`<figure><img src="${x.f}" alt="">${x.c?`<figcaption>${esc(x.c)}</figcaption>`:""}</figure>`).join("")}</div></div>`:"";
+ const fb=(img,t,nm)=>`<div class="fb">${img?`<img src="${img}" alt="Firma">`:'<div class="blank"></div>'}<div class="cap">${t}${nm?": "+esc(nm):""}</div></div>`;
+ return `<div class="rp"><table class="pg"><thead><tr><td><div class="sp"></div></td></tr></thead><tbody><tr><td>
+ <div class="hero"><div><div class="ey">Informe de inspección de cuadrilla</div><h2>${esc(o.contratista||"Cuadrilla")}</h2><div class="sub">${esc(o.ubic||"")}${o.gps?" ("+esc(o.gps)+")":""}</div><div class="meta">${esc(fh(o))}${o.tipo?" — "+esc(o.tipo):""}</div></div>${o.logo?`<img src="${o.logo}" alt="Logo del contratista">`:""}</div>
+ <div class="kpis"><div class="gauge" style="--p:${r.p||0};--gc:${col(r.p)}"><b>${r.p==null?"–":r.p+"%"}</b><small>cumplimiento</small></div><div class="kp ok"><b>${r.ok}</b><small>SI</small></div><div class="kp no"><b>${r.no}</b><small>NO</small></div><div class="kp na"><b>${na}</b><small>N/A</small></div></div>
+ ${r.stop.length?`<div class="alert">DETENER TAREA: incumplimiento crítico<ul>${r.stop.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:(r.p==null?"":'<div class="good">Sin incumplimientos críticos</div>')}
+ <div class="grid">${gi("Comitente",o.comitente)}${gi("Contratista / Sector / Cuadrilla",o.contratista)}${gi("ART",o.art)}${gi("Inspector (realizó la visita)",o.insp)}</div>
+ ${c.resp||c.tareas?`<div class="cap2">${gi("Capataz",c.resp||"–")}${gi("Tareas asignadas",c.tareas||"–")}</div>`:""}
+ ${(c.sel||[]).length||vehL.length?`<div class="mit">${lst("Integrantes",c.sel||[])}${lst("Vehículos",vehL)}</div>`:""}
+ ${bars?`<div class="bars"><h3>Cumplimiento por bloque</h3>${bars}</div>`:""}
+ ${blq}${acc}${gal}
+ <div class="blk"><div class="bt"><b>F</b><span>Firmas</span></div><div class="sg">${fb(s.f.insp,"Inspector",o.insp)}${fb(s.f.resp,"Responsable de cuadrilla",c.resp)}</div></div>
+ </td></tr></tbody><tfoot><tr><td><div class="sp"></div></td></tr></tfoot></table></div>`;
+}
+function resumen(s){
+ const r=sc(s),o=s.obra,c=s.cuad,ic=p=>p==null?"⚪":p>=90?"🟢":p>=70?"🟡":"🔴";
+ const L=["*INSPECCIÓN DE CUADRILLA*",""];
+ [["Comitente",o.comitente],["Contratista / Sector / Cuadrilla",o.contratista],["Ubicación",o.ubic],["Fecha",fh(o)],["Tipo",o.tipo],["Inspector",o.insp],["Capataz",c.resp],["Integrantes",(c.sel||[]).join(", ")],["Vehículos",(c.veh||[]).filter(v=>v.u||v.d).map(vl).join("; ")]].forEach(x=>{if(x[1])L.push("*"+x[0]+":* "+x[1])});
+ L.push("","*Cumplimiento global: "+(r.p==null?"–":r.p+"%")+"* "+ic(r.p),"");
+ if(s.barras!==false)r.B.forEach(b=>{if(b.p!=null)L.push(ic(b.p)+" "+b.n+": "+b.p+"%")});
+ if(r.stop.length)L.push("","⛔ *DETENER TAREA*",...r.stop.map(x=>"• "+x));
+ const no=[];let n=0;
+ CFG.forEach((b,bi)=>b.i.forEach((x,i)=>{n++;const d=s.it[bi+"-"+i]||{};if(d.e==="no")no.push("• "+n+". "+x[0]+(d.o?" _("+d.o+")_":""))}));
+ if(no.length)L.push("","❌ *Ítems con NO ("+no.length+")*",...no);
+ if(s.acc.length)L.push("","📋 *Acciones correctivas*",...s.acc.map(a=>"• "+(a.t||"")+(a.r?" — "+a.r:"")+(a.p?" ("+dm(a.p)+")":"")));
+ if((s.gal||[]).length)L.push("","📷 Fotos adicionales: "+s.gal.length+" (ver informe)");
+ return L.join("\n")}
+/* ===== render ===== */
+function render(){if(tab==="obra")autoFH();nav();$("#app").innerHTML=V[tab]();head();if(tab==="cierre")["insp","resp"].forEach(sig);window.scrollTo(0,0)}
+function sig(n){
+ const c=$("#c-"+n);if(!c)return;const dpr=window.devicePixelRatio||1;c.width=c.clientWidth*dpr;c.height=160*dpr;
+ const g=c.getContext("2d");g.scale(dpr,dpr);g.lineWidth=2.2;g.lineCap="round";g.strokeStyle="#111";
+ if(S.f[n]){const im=new Image();im.onload=()=>g.drawImage(im,0,0,c.clientWidth,160);im.src=S.f[n]}
+ let d=false;const pt=e=>{const b=c.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+ c.onpointerdown=e=>{d=true;c.setPointerCapture(e.pointerId);const p=pt(e);g.beginPath();g.moveTo(p[0],p[1])};
+ c.onpointermove=e=>{if(!d)return;const p=pt(e);g.lineTo(p[0],p[1]);g.stroke()};
+ c.onpointerup=()=>{if(!d)return;d=false;S.f[n]=c.toDataURL("image/png");persist()};
+}
+function photo(file,cb,m=800,ty="image/jpeg"){
+ const fr=new FileReader();fr.onerror=()=>toast("No se pudo leer la foto");fr.onload=()=>{const im=new Image();im.onerror=()=>toast("No se pudo procesar la foto");im.onload=()=>{const k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL(ty,.6))};im.src=fr.result};fr.readAsDataURL(file)
+}
+function showOut(t){const o=$("#out");if(!o)return;o.style.display="block";o.value=t;o.select();try{navigator.clipboard.writeText(t).then(()=>toast("Copiado")).catch(()=>toast("Seleccioná y copiá el texto"))}catch(e){toast("Seleccioná y copiá el texto")}}
+/* ===== eventos ===== */
+document.addEventListener("input",e=>{
+ const t=e.target;
+ if(t.dataset.p==="obra.fecha"||/^acc\.\d+\.p$/.test(t.dataset.p||"")){let v=t.value.replace(/\D/g,"").slice(0,8);t.value=v.length>4?v.slice(0,2)+"/"+v.slice(2,4)+"/"+v.slice(4):v.length>2?v.slice(0,2)+"/"+v.slice(2):v}
+ if(t.dataset.p){if(/^cuad\.veh\.\d+\.d$/.test(t.dataset.p))t.value=t.value.toUpperCase();set(t.dataset.p,t.type==="checkbox"?t.checked:t.value);if(/^obra\.(fecha|hora)$/.test(t.dataset.p))S.obra.fm=1;if(/^cuad\.veh\.\d+\.t$/.test(t.dataset.p)){S.cuad.veh[+t.dataset.p.split(".")[2]].g=t.value==="Camión"?"s/grúa":"";const y=scrollY;render();scrollTo(0,y)}persist();if(t.dataset.p==="barras"){const y=scrollY;render();scrollTo(0,y)}if(t.dataset.p==="obra.insp"||t.dataset.p==="cuad.resp")document.querySelectorAll(`[data-p="${t.dataset.p}"]`).forEach(x=>{if(x!==t)x.value=t.value})}
+ else if(t.dataset.o){const k=t.dataset.o;(S.it[k]=S.it[k]||{}).o=t.value;persist()}
+ else if(t.dataset.g!==undefined){S.gal[+t.dataset.g].c=t.value;persist()}
+ else if(t.id==="q"){q=t.value;$("#hl").innerHTML=histList()}
+});
+document.addEventListener("change",e=>{
+ const t=e.target;
+ if(t.dataset.sel!==undefined){const a=S.cuad.sel=S.cuad.sel||[],k=a.indexOf(t.dataset.sel);if(t.checked&&k<0)a.push(t.dataset.sel);if(!t.checked&&k>=0)a.splice(k,1);persist();return}
+ if(t.dataset.logo!==undefined){const f=t.files[0];if(f)photo(f,u=>{S.obra.logo=u;persist();render()},360,"image/png");return}
+ if(t.dataset.nom!==undefined){const f=t.files[0];if(f)f.text().then(x=>{setNom(NOM.concat(x.split(/\r?\n/).map(l=>l.split(/[;\t]/)[0])));toast("Listado importado");render()});return}
+ if(t.dataset.ph){const k=t.dataset.ph,fs=k==="gal"?[...t.files]:[t.files[0]];if(!fs[0]){toast("No se recibió la foto");return}fs.forEach(f=>photo(f,u=>setFoto(k,u)));t.value="";return}
+ if(t.dataset.imp!==undefined){const f=t.files[0];if(!f)return;f.text().then(x=>{try{const a=JSON.parse(x);if(!Array.isArray(a))throw 0;const ids=new Set(H.map(h=>h.id));a.forEach(h=>{if(h&&h.id&&!ids.has(h.id))H.push(migrar(h))});H.sort((a,b)=>String(b.id).localeCompare(String(a.id)));store("ci_hist",H);toast("Respaldo importado");render()}catch(err){toast("El archivo no es un respaldo válido")}})}
+});
+document.addEventListener("click",e=>{
+ const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.c){if(b.dataset.c==="s")camShot();else camClose();return}
+ if(b.dataset.tab){tab=b.dataset.tab;return render()}
+ if(b.dataset.v){const k=b.closest(".it").dataset.k,d=S.it[k]=S.it[k]||{};d.e=d.e===b.dataset.v?null:b.dataset.v;persist();const p=k.split("-");b.closest(".it").outerHTML=itemHTML(+p[0],+p[1]);head();return}
+ const a=b.dataset.a,i=+b.dataset.i;if(!a)return;
+ if(a==="gps"){if(!navigator.geolocation)return toast("Este dispositivo no tiene GPS");navigator.geolocation.getCurrentPosition(p=>{S.obra.gps=p.coords.latitude.toFixed(5)+", "+p.coords.longitude.toFixed(5)+" (±"+Math.round(p.coords.accuracy)+" m)";persist();render()},()=>toast("No se pudo obtener la ubicación. Revisá el permiso del navegador."),{enableHighAccuracy:true,timeout:15000})}
+ if(a==="reset"){ask("Se va a borrar todo lo cargado en la inspección actual. El historial no se modifica. ¿Querés empezar una planilla nueva?",()=>{S=blank();persist();tab="obra";render();toast("Planilla nueva en blanco")},"Borrar y empezar");return}
+ if(a==="savenom"){setNom($("#nom").value.split("\n"));toast("Listado guardado");render()}
+ if(a==="cam"){camOpen(b.dataset.k);return}
+ if(a==="more"){const k=b.dataset.k;(S.it[k]=S.it[k]||{}).x=1;persist();const q2=k.split("-");b.closest(".it").outerHTML=itemHTML(+q2[0],+q2[1]);return}
+ if(a==="delfoto"){const k=b.dataset.k;ask("Se quita la foto de este ítem.",()=>{if(S.it[k])delete S.it[k].f;persist();const q2=k.split("-");const el=document.querySelector(`.it[data-k="${k}"]`);if(el)el.outerHTML=itemHTML(+q2[0],+q2[1])},"Quitar");return}
+ if(a==="delgal"){ask("Se quita esta foto.",()=>{S.gal.splice(i,1);persist();$("#gal").innerHTML=galHTML()},"Quitar");return}
+ if(a==="ahora"){delete S.obra.fm;S.obra.fecha=hoy();S.obra.hora=now().slice(11);persist();render();return}
+ if(a==="addveh"){(S.cuad.veh=S.cuad.veh||[]).push({t:"Camioneta",g:"",u:"",d:""});persist();const y=scrollY;render();scrollTo(0,y);return}
+ if(a==="delveh"){ask("Se quita este vehículo de la planilla.",()=>{S.cuad.veh.splice(i,1);persist();render()},"Quitar");return}
+ if(a==="delnom"){ask("Se borra todo el listado de personal y se quitan los integrantes elegidos en esta planilla.",()=>{setNom([]);S.cuad.sel=[];persist();render()},"Borrar listado");return}
+ if(a==="dellogo"){delete S.obra.logo;persist();render()}
+ if(a==="addacc"){S.acc.push({});persist();render()}
+ if(a==="delacc"){S.acc.splice(i,1);persist();render()}
+ if(a==="autoacc"){const r=sc(S);r.fails.forEach(f=>{if(!S.acc.some(x=>x.t===f))S.acc.push({t:"Corregir — "+f})});persist();render()}
+ if(a==="clr"){delete S.f[b.dataset.n];persist();sig(b.dataset.n);const c=$("#c-"+b.dataset.n);c.getContext("2d").clearRect(0,0,c.width,c.height)}
+ if(a==="rep"){tab="rep";render()}
+ if(a==="dlrep"){const h=`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Informe de inspección</title><style>${document.querySelector("style").textContent}</style></head><body><main><div class="noprint" style="margin-bottom:12px"><button class="pri" onclick="window.print()">Imprimir / guardar PDF</button></div><div class="rep">${reporte(S)}</div></main></body></html>`,nm="informe-"+(S.obra.contratista||"inspeccion").replace(/[^\w]+/g,"-")+"-"+hoy().split("/").join("-")+".html",f=new File([h],nm,{type:"text/html"});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:nm}).catch(()=>{})}else{const u=URL.createObjectURL(f),l=document.createElement("a");l.href=u;l.download=nm;l.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}}
+ if(a==="print")window.print();
+ if(a==="wa")window.open("https://wa.me/?text="+encodeURIComponent(resumen(S)),"_blank");
+ if(a==="save"){
+  if(sc(S).p==null&&!S._ok){ask("La inspección no tiene ítems evaluados. ¿Guardarla igual?",()=>{S._ok=1;b.click()},"Guardar igual");return}delete S._ok;
+  let c=JSON.parse(JSON.stringify(S));H.unshift(c);
+  if(!store("ci_hist",H)){Object.values(c.it).forEach(d=>delete d.f);c.gal=[];if(!store("ci_hist",H)){H.shift();return toast("Memoria llena: descargá un respaldo y borrá inspecciones viejas")}toast("Se guardó sin fotos por falta de memoria")}
+  S=blank();persist();tab="hist";render()}
+ if(a==="openh"){ask("Abrir esta inspección reemplaza la que está en curso y se pierde lo no guardado.",()=>{S=JSON.parse(JSON.stringify(H[i]));persist();tab="obra";render()},"Abrir")}
+ if(a==="delh"){ask("Se borra esta inspección del historial y no se puede recuperar.",()=>{H.splice(i,1);store("ci_hist",H);render()},"Borrar")}
+ if(a==="copyj")showOut(JSON.stringify(H));
+ if(a==="dlj"){try{const u=URL.createObjectURL(new Blob([JSON.stringify(H)],{type:"application/json"})),l=document.createElement("a");l.href=u;l.download="inspecciones-"+hoy().split("/").join("-")+".json";l.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}catch(err){showOut(JSON.stringify(H))}}
+});
+render();
+</script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))</script>
+</body>
+</html>
